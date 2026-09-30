@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Datos desde Google Drive</title>
+  <!-- Usamos PapaParse para convertir el CSV a objetos JavaScript fácilmente -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+
+  <h2>Datos de la Hoja de Cálculo</h2>
+  <div id="loading">Cargando datos...</div>
+  <table id="tabla-datos" style="display:none;">
+    <thead id="tabla-header"></thead>
+    <tbody id="tabla-body"></tbody>
+  </table>
+
+  <script>
+    // REEMPLAZA ESTA URL CON TU ENLACE CSV PUBLICADO
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/TU_ID_AQUI/pub?output=csv';
+
+    Papa.parse(CSV_URL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        document.getElementById('loading').style.display = 'none';
+        const data = results.data;
+        if (!data || data.length === 0) return;
+
+        // Crear encabezados de tabla
+        const headerRow = document.getElementById('tabla-header');
+        const headers = Object.keys(data[0]);
+        let headerHTML = '<tr>';
+        headers.forEach(h => headerHTML += `<th>${h}</th>`);
+        headerHTML += '</tr>';
+        headerRow.innerHTML = headerHTML;
+
+        // Llenar contenido de la tabla
+        const bodyRow = document.getElementById('tabla-body');
+        let bodyHTML = '';
+        data.forEach(row => {
+          bodyHTML += '<tr>';
+          headers.forEach(h => bodyHTML += `<td>${row[h] || ''}</td>`);
+          bodyHTML += '</tr>';
+        });
+        bodyRow.innerHTML = bodyHTML;
+
+        document.getElementById('tabla-datos').style.display = 'table';
+      }
+    });
+  </script>
+</body>
+</html>
